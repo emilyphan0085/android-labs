@@ -35,9 +35,6 @@
         android:inputType="textPersonName"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="75dp"
-        android:nextFocusDown="@id/Text4"
-        android:nextFocusRight="@id/Text4"
-
          />
 
     <TextView
@@ -46,8 +43,7 @@
         android:layout_height="wrap_content"
         android:text="@string/textView4"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="120dp"
-        />
+        tools:layout_editor_absoluteY="120dp" />
 
     <EditText
         android:id="@+id/Text4"
@@ -57,11 +53,7 @@
         android:inputType="textEmailAddress"
         android:text="@string/editText4"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="149dp"
-        android:nextFocusDown="@id/imageButton2"
-        android:nextFocusUp="@id/editText3"
-        android:nextFocusRight="@id/imageButton2"
-        android:nextFocusLeft="@id/editText3"/>
+        tools:layout_editor_absoluteY="149dp" />
 
     <TextView
         android:id="@+id/textView5"
@@ -77,12 +69,7 @@
         android:layout_height="wrap_content"
         app:srcCompat="@android:drawable/picture_frame"
         tools:layout_editor_absoluteX="18dp"
-        tools:layout_editor_absoluteY="228dp"
-        android:nextFocusDown="@id/button2"
-        android:nextFocusUp="@id/Text4"
-        android:nextFocusRight="@id/button2"
-        android:nextFocusLeft="@id/Text4"
-        />
+        tools:layout_editor_absoluteY="228dp" />
 
     <TextView
         android:id="@+id/textView6"
@@ -96,18 +83,11 @@
         android:id="@+id/button2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button2"
-        android:nextFocusDown="@id/weather"
-        android:nextFocusUp="@id/imageButton2"
-        android:nextFocusRight="@id/weather"
-        android:nextFocusLeft="@id/imageButton2"/>
+        android:text="@string/button2" />
 
     <Button
         android:id="@+id/weather"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Weather"
-        android:nextFocusUp="@id/button2"
-        android:nextFocusLeft="@id/button2"
-        />
+        android:text="Weather" />
 </LinearLayout>
