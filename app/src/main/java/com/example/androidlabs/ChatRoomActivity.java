@@ -4,20 +4,20 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,11 +26,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.sql.Types.INTEGER;
 
 public class ChatRoomActivity extends AppCompatActivity {
     private ListView listView;
@@ -41,12 +40,15 @@ public class ChatRoomActivity extends AppCompatActivity {
     private ContentValues value = new ContentValues();
     private Cursor cursor;
     private SQLiteDatabase sql;
-
-
+    private FrameLayout frameLayout;
+    public static final String ITEM_MESSAGE = "MESSAGE";
+    public static final String ITEM_ID = "ID";
+    public static final String IS_SEND = "IS_SEND";
     class ChatAdapter extends BaseAdapter {
         private List<Message> list;
         private int sendOrReceive;
         private Context context;
+
 
         public ChatAdapter(Context context, int layout, List<Message> list) {
             this.list = list;
@@ -91,7 +93,7 @@ public class ChatRoomActivity extends AppCompatActivity {
         receive = (Button) findViewById(R.id.receive);
         editText = (EditText) findViewById(R.id.editText4);
         sql = helper.getWritableDatabase();
-//        helper.onUpgrade(sql,1, 1);
+      //  helper.onUpgrade(sql,1, 1);
 
         ArrayList<Message> arrayList = new ArrayList<>();
         ChatAdapter arrayAdapter = new ChatAdapter(this, android.R.layout.simple_list_item_1, arrayList);
@@ -124,6 +126,33 @@ public class ChatRoomActivity extends AppCompatActivity {
             editText.getText().clear();
         });
 
+      frameLayout=findViewById(R.id.fragmentLocation);
+        boolean isTablet = frameLayout!= null;
+        listView.setOnItemClickListener((AdapterView<?> parent, View view, int position, long id) -> {
+
+            Message message = (Message) parent.getAdapter().getItem(position);
+
+            Bundle dataToPass = new Bundle();
+            dataToPass.putString(ITEM_MESSAGE,message.getMessage() );
+            dataToPass.putLong(ITEM_ID, message.getId());
+            dataToPass.putBoolean(IS_SEND, message.getSendOrReceive() == R.layout.send_layout);
+            if(isTablet)
+            {
+                DetailsFragment dFragment = new DetailsFragment(); //add a DetailFragment
+                dFragment.setArguments( dataToPass ); //pass it a bundle for information
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragmentLocation, dFragment) //Add the fragment in FrameLayout
+                        .commit(); //actually load the fragment.
+            }
+            else //isPhone
+            {
+                Intent nextActivity = new Intent(this, EmptyActivity.class);
+                nextActivity.putExtras(dataToPass); //send data to next activity
+                startActivity(nextActivity); //make the transition
+            }
+
+        });
         listView.setOnItemLongClickListener((AdapterView<?> parent, View view, int position, long id) -> {
 
             Message message = (Message)  parent.getAdapter().getItem(position);
@@ -136,17 +165,23 @@ public class ChatRoomActivity extends AppCompatActivity {
                     .setPositiveButton(R.string.yes, (DialogInterface dialog, int which) -> {
                         sql.delete(DatabaseMessage.TABLE_NAME, DatabaseMessage.COL_ID + "=" + message.getId(), null);
                         arrayList.remove(position);
+            for(Fragment fragment: getSupportFragmentManager().getFragments()){
+                if(fragment.getArguments().getLong(ITEM_ID)==id){
+                   getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+                }
+}
                         arrayAdapter.notifyDataSetChanged();
                         Toast.makeText(ChatRoomActivity.this, getString(R.string.yes_message), Toast.LENGTH_LONG).show();
                     })
                     .setNegativeButton(R.string.no, (DialogInterface dialog, int which)->{
-                    Toast.makeText(ChatRoomActivity.this, getString(R.string.no_message), Toast.LENGTH_LONG).show();});
+                        Toast.makeText(ChatRoomActivity.this, getString(R.string.no_message), Toast.LENGTH_LONG).show();});
 
             AlertDialog alertDialog=alertDialogBuilder.create();
             alertDialog.show();
 
             return listView.isLongClickable();
         });
+
     }
 
     @Override
